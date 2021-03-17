@@ -11,7 +11,7 @@
 
 <meta name="author" content="Reynard Verill" />
 
-<meta name="date" content="2021-03-17" />
+<meta name="date" content="2021-03-18" />
 
 <title>LBB1</title>
 
@@ -3023,7 +3023,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">LBB1</h1>
 <h4 class="author">Reynard Verill</h4>
-<h4 class="date">March 17, 2021</h4>
+<h4 class="date">March 18, 2021</h4>
 
 </div>
 
@@ -3060,7 +3060,7 @@ text-align: justify}
 <h1>Read Data</h1>
 <p>Here, we will read the csv data file into our IDE, do further inspection regarding our data, and perform suitable data cleansing for further processing.</p>
 </div>
-<div id="data-pre-processing" class="section level1">
+<div id="data-pre-processing" class="section level1 tabset">
 <h1>Data pre-processing</h1>
 <p>Here we will perform an integral part of preparing our data into an understandable and complete format for the next step of machine learning.</p>
 <div id="data-inspection" class="section level2">
@@ -3085,7 +3085,25 @@ text-align: justify}
 ## $ previous  &lt;int&gt; 0, 4, 1, 0, 0, 3, 2, 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 2, 0, 1,…
 ## $ poutcome  &lt;chr&gt; &quot;unknown&quot;, &quot;failure&quot;, &quot;failure&quot;, &quot;unknown&quot;, &quot;unknown&quot;, &quot;fai…
 ## $ y         &lt;chr&gt; &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;, &quot;no&quot;,…</code></pre>
-<p>Input variables: # bank client data: 1 - age (numeric) 2 - job : type of job (categorical: “admin.”,“unknown”,“unemployed”,“management”,“housemaid”,“entrepreneur”,“student”, “blue-collar”,“self-employed”,“retired”,“technician”,“services”) 3 - marital : marital status (categorical: “married”,“divorced”,“single”; note: “divorced” means divorced or widowed) 4 - education (categorical: “unknown”,“secondary”,“primary”,“tertiary”) 5 - default: has credit in default? (binary: “yes”,“no”) 6 - balance: average yearly balance, in euros (numeric) 7 - housing: has housing loan? (binary: “yes”,“no”) 8 - loan: has personal loan? (binary: “yes”,“no”) # related with the last contact of the current campaign: 9 - contact: contact communication type (categorical: “unknown”,“telephone”,“cellular”) 10 - day: last contact day of the month (numeric) 11 - month: last contact month of year (categorical: “jan”, “feb”, “mar”, …, “nov”, “dec”) 12 - duration: last contact duration, in seconds (numeric) # other attributes: 13 - campaign: number of contacts performed during this campaign and for this client (numeric, includes last contact) 14 - pdays: number of days that passed by after the client was last contacted from a previous campaign (numeric, -1 means client was not previously contacted) 15 - previous: number of contacts performed before this campaign and for this client (numeric) 16 - poutcome: outcome of the previous marketing campaign (categorical: “unknown”,“other”,“failure”,“success”)</p>
+<p>Input variables:</p>
+<ol style="list-style-type: decimal">
+<li>age (numeric)</li>
+<li>job : type of job (categorical: “admin.”, “unknown”, “unemployed”, “management”, “housemaid”, “entrepreneur”, “student”, “blue-collar”, “self-employed”, “retired”, “technician”, “services”)</li>
+<li>marital : marital status (categorical: “married”,“divorced”,“single”; note: “divorced” means divorced or widowed)</li>
+<li>education (categorical: “unknown”,“secondary”,“primary”,“tertiary”)</li>
+<li>default: has credit in default? (binary: “yes”,“no”)</li>
+<li>balance: average yearly balance, in euros (numeric)</li>
+<li>housing: has housing loan? (binary: “yes”,“no”)</li>
+<li>loan: has personal loan? (binary: “yes”,“no”)</li>
+<li>contact: contact communication type (categorical: “unknown”,“telephone”,“cellular”)</li>
+<li>day: last contact day of the month (numeric)</li>
+<li>month: last contact month of year (categorical: “jan”, “feb”, “mar”, …, “nov”, “dec”)</li>
+<li>duration: last contact duration, in seconds (numeric)</li>
+<li>campaign: number of contacts performed during this campaign and for this client (numeric, includes last contact)</li>
+<li>pdays: number of days that passed by after the client was last contacted from a previous campaign (numeric, -1 means client was not previously contacted)</li>
+<li>previous: number of contacts performed before this campaign and for this client (numeric)</li>
+<li>poutcome: outcome of the previous marketing campaign (categorical: “unknown”,“other”,“failure”,“success”)</li>
+</ol>
 <p>Check the dimension of our data frame. The dimension is 4521*17 (4521 rows x 17 columns).</p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">dim</span>(bank)</span></code></pre></div>
 <pre><code>## [1] 4521   17</code></pre>
