@@ -7,7 +7,7 @@ output:
     toc: yes
   html_document:
     df_print: paged
-    highlight: tango
+    highlight: breezedark
     theme: united
     toc: yes
     toc_float:
