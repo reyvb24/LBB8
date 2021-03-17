@@ -65,7 +65,7 @@ em {
 }
 
 h4.author > em {
-    color: white;
+    color: red;
     text-decoration: initial;
     background: black;
     border-radius: 6px;
