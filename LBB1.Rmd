@@ -8,7 +8,7 @@ output:
   html_document:
     df_print: paged
     highlight: tango
-    theme: cosmo
+    theme: united
     toc: yes
     toc_float:
       collapsed: no
