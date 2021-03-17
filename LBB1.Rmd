@@ -3,8 +3,6 @@ title: "LBB1"
 author: "Reynard Verill"
 date: "`r format(Sys.Date(), '%B %e, %Y')`"
 output:
-  pdf_document:
-    toc: yes
   html_document:
     df_print: paged
     highlight: breezedark
@@ -13,6 +11,8 @@ output:
     toc_float:
       collapsed: no
     css: assets/style.css
+  pdf_document:
+    toc: yes
 ---
 
 
