@@ -1,3 +1,0 @@
-"0","accuracy_holt <- forecast::accuracy(holt_forecast$mean, val_msts)"
-"0","accuracy_ets <- forecast::accuracy(forecast_ets$mean, val_msts)"
-"0","accuracy_arima <- forecast::accuracy(forecast_arima$mean, val_msts)"

@@ -1,4 +1,0 @@
-"0","tesla <- tesla %>% rename(price_date = Date)"
-"0","tesla <- tesla %>% "
-"0","  mutate(price_date = as.Date(price_date, tz = """", format(""%m / %d / %Y"")))"
-"0","tesla %>% head()"
