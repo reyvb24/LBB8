@@ -1,0 +1,2 @@
+"0","knitr::opts_chunk$set(echo = TRUE, fig.align = ""center"", out.width = ""80%"")"
+"0","options(scipen = 99)"

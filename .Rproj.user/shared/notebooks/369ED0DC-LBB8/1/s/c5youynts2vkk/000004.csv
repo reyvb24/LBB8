@@ -1,0 +1,2 @@
+"0","val_msts <- tesla_msts %>% tail(7*24)"
+"0","train_msts <- tesla_msts %>% head(length(tesla) - 7*24)"
