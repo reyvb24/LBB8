@@ -1,0 +1,2 @@
+"0","tesla[, c( ""Close.Last"", ""Open"", ""High"", ""Low"")] <- lapply(tesla[, c( ""Close.Last"", ""Open"", ""High"", ""Low"")], function(y) as.numeric(gsub(""[$]"", """", y)))"
+"0","tesla %>% head()"

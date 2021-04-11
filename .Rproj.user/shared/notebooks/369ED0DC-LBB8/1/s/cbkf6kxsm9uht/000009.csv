@@ -1,0 +1,7 @@
+"0","accuracy_data %>% "
+"0"," ggplot() +"
+"0","  geom_line(aes(x = date, y = actual, colour = ""Actual""),size=0.5)+"
+"0","  geom_line(aes(x = date, y = holt, colour = ""Holt Winter Model (Best Model)""),size=0.3)+"
+"0","  geom_line(aes(x = date, y = arima, colour = ""Arima Model""),size=0.5)+"
+"0","  geom_line(aes(x = date, y = ets, colour = ""ETS Model""), size = 0.3) +"
+"0","  labs(title = ""Hourly Visitors - Actual Vs All Models"",x = ""Date"",y = ""Visitor"",colour = """")"

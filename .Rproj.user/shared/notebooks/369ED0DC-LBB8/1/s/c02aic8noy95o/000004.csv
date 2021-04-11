@@ -1,0 +1,2 @@
+"0","tesla <- tesla %>% pad(interval = ""day"")"
+"0","tesla %>% head()"

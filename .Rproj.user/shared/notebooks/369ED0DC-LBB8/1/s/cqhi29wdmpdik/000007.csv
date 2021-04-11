@@ -1,0 +1,2 @@
+"0","tesla <- tesla %>% fill(-price_date)"
+"0","ggplot_na_distribution(tesla$Close.Last)"

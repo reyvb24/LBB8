@@ -1,0 +1,12 @@
+"0","tesla_weekly %>%
+  mutate(price_date = tesla$Close.Last) %>% 
+  mutate(Month  = month(tesla$price_date, label = TRUE, abbr = FALSE), Day = wday(price_date)) %>% 
+  group_by(Day, Month) %>%
+  summarise(Seasonal = sum(Seasonal7 + Seasonal30.44)) %>%
+  ggplot() +
+  geom_bar(aes(x = Day, y = Seasonal, fill = Month), stat =""identity"",  width = 0.7)+
+  scale_x_continuous(breaks = seq(10,22,1)) +
+  labs(title = ""Multi-Seasonality Analysis  - Weekly & Monthly"") 
+"
+"2","`summarise()` regrouping output by 'Day' (override with `.groups` argument)
+"
