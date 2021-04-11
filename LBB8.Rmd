@@ -1,0 +1,298 @@
+---
+title: "LBB8"
+author: "Reynard Verill"
+date: "4/10/2021"
+output: 
+  html_document:
+    df_print: paged
+    highlight: breezedark
+    theme: cosmo
+    toc: yes
+    toc_float:
+      collapsed: no
+    css: assets/style.css
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", out.width = "80%")
+options(scipen = 99)
+```
+
+
+<style>
+body {
+text-align: justify}
+</style>
+
+# Objectives 
+
+In this report, we will try to implement the concepts of time series forecasting into predicting a stock price performance in the future.
+
+```{r}
+knitr::include_graphics("assets/stock.jpg")
+```
+
+# Libraries
+
+Firstly, we are going to import the necessary libraries for our time series analysis. The libraries vary in their utilities, ranging from the most general ones such as tidyverse, up to tseries for dealing with time-series objects.
+```{r}
+library(tidyverse)
+library(lubridate)
+library(forecast)
+library(TTR)
+library(fpp)
+library(tseries)
+library(TSstudio)
+library(padr)
+library(imputeTS)
+```
+
+
+# Import Data 
+
+Subsequently, we can import our tesla stock price data-set for this analysis, and perform an examination on both data frames by using the glimpse function to understand further their nature. Below are the column names along with their sample data.
+```{r}
+#read data into train and test variables respectively
+tesla <- read.csv("data_input/tesla.csv")
+glimpse(tesla)
+```
+
+
+The dataset includes information about:
+
+- Date: The date of the price of Tesla stock
+- Close.Last: The closing price of the stock in a day
+- Volume: The volume of the stock in a day
+- Open: The opening price of the stock in a day
+- High: The peak price the stock reaches in a day
+- Low: The lowest price the stock reached in a day
+
+# Data preprocessing
+
+Here, we perform data cleansing to eradicate all the $ signs in fron of the numbers.
+
+```{r}
+tesla[, c( "Close.Last", "Open", "High", "Low")] <- lapply(tesla[, c( "Close.Last", "Open", "High", "Low")], function(y) as.numeric(gsub("[$]", "", y)))
+tesla %>% head()
+```
+
+
+Here, we change the date from character into a POSIXct format, and also alter the remainder into numeric.
+```{r}
+tesla <- tesla %>% rename(price_date = Date)
+tesla <- tesla %>% 
+  mutate(price_date = as.Date(price_date, tz = "", format("%m / %d / %Y")))
+tesla %>% head()
+```
+
+Check whether there is any missing value.
+```{r}
+colSums(is.na(tesla))
+```
+
+## Time Range
+
+Here, we check the starting and ending time of the recording period for both estimations.
+
+```{r}
+range(tesla$price_date)
+```
+
+## Padding
+
+Padding towards both data frames is necessary to assure that our time series data will have a complete daily interval data.
+
+```{r}
+tesla <- tesla %>% pad(interval = "day")
+tesla %>% head()
+```
+
+As we can see from the graph below, our dataset suddenly becomes filled with missing values after performing padding. This is because our dataset did not initially record the prices on the days which the stock market is closed. Therefore, we will fill the missing values with the previous values.
+```{r}
+ggplot_na_distribution(tesla$Close.Last)
+```
+
+```{r}
+tesla <- tesla %>% fill(-price_date)
+ggplot_na_distribution(tesla$Close.Last)
+```
+
+Check the first few rows of our dataset using head function.
+```{r}
+tesla %>% head()
+```
+
+
+After that, we can store the values of the starting date and ending date into start and end variables respectively.
+```{r}
+start <- min(tesla$price_date)
+start
+```
+
+```{r}
+end <- max(tesla$price_date)
+end
+```
+
+# Time Series model
+
+In this section, we are going to make time series models from our processed data frames, analyze their seasonality patterns, forecast them using various methods, and examine the results.
+
+## Make time series models
+
+```{r}
+tesla_ts <- ts(data = tesla$Close.Last, start =  start, frequency = 7)
+tesla_ts %>% autoplot()
+```
+
+## Decomposition
+
+```{r}
+tesla_decomp<- tesla_ts %>% decompose()
+tesla_decomp %>% autoplot()
+```
+
+## Make time series models with multiple seasonalities
+
+
+```{r}
+tesla_msts<-tesla$Close.Last %>% msts(seasonal.periods = c(7,365.25/12, 365.25))
+tesla_msts_decomp <- tesla_msts %>% mstl()
+tesla_msts_decomp %>% autoplot()
+```
+
+```{r}
+tesla %>% 
+  mutate(Day = wday(price_date), Seasonal = tesla_decomp$seasonal) %>% 
+  distinct(Day, Seasonal) %>% 
+  ggplot(aes(x = Day, y = Seasonal)) +
+  geom_col(aes(fill = Seasonal))+
+  scale_fill_gradient(low = "black", high = "blue") +
+  labs(title = "Plot of seasonal against day") 
+```
+
+```{r}
+tesla_weekly <- data.frame(tesla_msts_decomp)
+
+tesla_weekly %>%
+  mutate(price_date = tesla$Close.Last) %>% 
+  mutate(Month  = month(tesla$price_date, label = TRUE, abbr = FALSE), Day = wday(price_date)) %>% 
+  group_by(Day, Month) %>%
+  summarise(Seasonal = sum(Seasonal7 + Seasonal30.44)) %>%
+  ggplot() +
+  geom_bar(aes(x = Day, y = Seasonal, fill = Month), stat ="identity",  width = 0.7)+
+  scale_x_continuous(breaks = seq(10,22,1)) +
+  labs(title = "Multi-Seasonality Analysis  - Weekly & Monthly") 
+```
+
+
+From the above visualizations, we can be quite confident that our previous assumptions remain true, there really are multiple seasonalities for weekly, monthly, and annually.
+
+# Model Fitting and Cross-Validation
+
+## Cross-validation
+
+In this section, we separate the tesla_msts data frame into val_msts variable for the last 24 weeks of the available data to validate our model with train_msts being the rest of the data, and determine which model performs the best.
+```{r}
+val_msts <- tesla_msts %>% tail(7*24)
+train_msts <- tesla_msts %>% head(length(tesla) - 7*24)
+```
+
+```{r}
+train_msts %>% autoplot()
+```
+```{r}
+val_msts %>% autoplot()
+```
+
+## Modeling
+
+Here, we will make 3 different models to be evaluated, namely HoltWinters model, ETS model, and Arima model.
+
+```{r}
+model_holt_msts <- HoltWinters(train_msts)
+model_stlm_ets <- train_msts %>% stlm(method = "ets")
+model_stlm_arima <- train_msts %>% stlm(method = "arima")
+```
+
+
+## Forecasting
+
+```{r}
+holt_forecast <- forecast(model_holt_msts, 7*24)
+autoplot(train_msts, series = "Actual") +
+  autolayer(holt_forecast$mean, series = "ets prediction")
+```
+
+```{r}
+forecast_ets <- forecast(model_stlm_ets, h = 7*24)
+autoplot(train_msts, series = "Actual") +
+  autolayer(forecast_ets$mean, series = "ets prediction")
+```
+
+```{r}
+forecast_arima <- forecast(model_stlm_arima, h = 7*24)
+autoplot(train_msts, series = "Actual") +
+    autolayer(forecast_arima$mean, series = "Arima prediction")
+```
+
+# Evaluation
+
+## Accuracy
+
+```{r}
+accuracy_holt <- forecast::accuracy(holt_forecast$mean, val_msts)
+accuracy_ets <- forecast::accuracy(forecast_ets$mean, val_msts)
+accuracy_arima <- forecast::accuracy(forecast_arima$mean, val_msts)
+```
+
+```{r}
+summary <- rbind(accuracy_holt, accuracy_ets, accuracy_arima)
+rownames(summary) <- c("HoltWinters Accuracy", "ETS Accuracy", "Arima accuracy")
+summary
+```
+
+
+Based on the accuracy results above, it can be deduced that performing time series forecasting along on predicting a stock's future price is not enough as reflected on the extremely high MAE and RMSE. Hence, we will need to consider other methodologies for future experimentation.
+
+## Visualization of actual against model prediction
+```{r}
+accuracy_data <- data.frame(date = tesla$price_date %>% tail(7*24),
+  actual = as.vector(val_msts) ,
+  holt = as.vector(holt_forecast$mean) ,
+  ets = as.vector(forecast_ets$mean),
+  arima = as.vector(forecast_arima$mean))
+```
+
+
+```{r}
+accuracy_data %>% 
+ ggplot() +
+  geom_line(aes(x = date, y = actual, colour = "Actual"),size=0.5)+
+  geom_line(aes(x = date, y = holt, colour = "Holt Winter Model (Best Model)"),size=0.3)+
+  geom_line(aes(x = date, y = arima, colour = "Arima Model"),size=0.5)+
+  geom_line(aes(x = date, y = ets, colour = "ETS Model"), size = 0.3) +
+  labs(title = "Hourly Visitors - Actual Vs All Models",x = "Date",y = "Visitor",colour = "")
+```
+
+# Conclusion
+
+## No auto-correlation assumption
+```{r}
+acf(residuals(model_holt_msts))
+```
+As the lag 1 does surpass the top and bottom dotted-blue line limit, then auto-correlation assumption is not fulfilled.
+
+```{r}
+Box.test(model_stlm_arima$residuals, type = "Ljung-Box")
+```
+
+As the p-value is above 0.05, it does not have auto-correlation.
+
+## Normality of residual assumption
+
+```{r}
+shapiro.test(x = residuals(model_holt_msts))
+```
+
+From the Shapiro_Wilk test,it can be seen that the p-value is lower than 0.05, therefore the residuals are not distributed normally. This might indicates that we cannot ensure that the error will always be consistent for future analysis. This phenomenon might happen from the lack of amount of data that we have.
