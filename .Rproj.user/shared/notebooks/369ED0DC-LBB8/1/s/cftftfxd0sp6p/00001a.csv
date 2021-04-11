@@ -1,5 +1,0 @@
-"0","accuracy_data <- data.frame(date = tesla$price_date %>% tail(7*24),"
-"0","  actual = as.vector(val_msts) ,"
-"0","  holt = as.vector(holt_forecast$mean) ,"
-"0","  ets = as.vector(forecast_ets$mean),"
-"0","  arima = as.vector(forecast_arima$mean))"

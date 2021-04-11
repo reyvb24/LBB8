@@ -1,3 +1,0 @@
-"0","forecast_ets <- forecast(model_stlm_ets, h = 7*24)"
-"0","autoplot(train_msts, series = ""Actual"") +"
-"0","  autolayer(forecast_ets$mean, series = ""ets prediction"")"
