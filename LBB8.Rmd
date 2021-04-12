@@ -24,14 +24,6 @@ body {
 text-align: justify}
 </style>
 
-# Objectives 
-
-In this report, we will try to implement the concepts of time series forecasting into predicting a stock price performance in the future.
-
-```{r}
-knitr::include_graphics("assets/stock.jpg")
-```
-
 # Libraries
 
 Firstly, we are going to import the necessary libraries for our time series analysis. The libraries vary in their utilities, ranging from the most general ones such as tidyverse, up to tseries for dealing with time-series objects.
